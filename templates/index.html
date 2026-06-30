@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MR.GOLISODA — Master Creator & Org Access</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800;900&family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="/static/css/app.css">
+</head>
+<body>
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="lbrand"><div class="marble"></div><div><h1>MR.<span>GOLISODA</span></h1></div></div>
+    <div class="lsub">Burn Command Center</div>
+    <label>User ID</label>
+    <input id="loginUser" type="text" autocomplete="username" placeholder="e.g. admin" onkeydown="if(event.key==='Enter')doLogin()">
+    <label>Password</label>
+    <input id="loginPass" type="password" autocomplete="current-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="lbtn" onclick="doLogin()">Sign in →</button>
+    <div class="login-err" id="loginErr"></div>
+    <div class="login-hint">Demo: <b>admin / admin</b> · Users are managed in Masters → Users &amp; Access</div>
+  </div>
+</div>
+
+<header>
+  <div class="bar">
+    <div class="brand"><div class="marble"></div>
+      <div><h1>MR.<span>GOLISODA</span></h1><div class="sub">Master Creator</div></div></div>
+    <div class="modswitch">
+      <button class="modbtn active" data-m="masters" onclick="switchModule('masters')">⚙ Masters</button>
+      <button class="modbtn" data-m="burn" onclick="switchModule('burn')">🔥 Burn Dashboard</button>
+      <button class="modbtn" data-m="bottle" onclick="switchModule('bottle')">🍾 Bottle Calculator</button>
+      <button class="modbtn" data-m="route" onclick="switchModule('route')">🛣 Route Potential</button>
+      <button class="modbtn" data-m="pjp" onclick="switchModule('pjp')">📋 PJP Planning</button>
+      <button class="modbtn" data-m="p6" onclick="switchModule('p6')">📊 Sales Report</button>
+      <button class="modbtn" data-m="pnl" onclick="switchModule('pnl')">💵 Daily P&amp;L</button>
+      <button class="modbtn" data-m="finance" onclick="switchModule('finance')">🧾 Finance</button>
+      <button class="modbtn" data-m="reports" onclick="switchModule('reports')">📑 Reports</button>
+      <button class="modbtn" data-m="empreport" onclick="switchModule('empreport')">📋 Employee Report</button>
+    </div>
+    <div class="hspace"></div>
+    <span class="role-badge" id="roleBadge"><span class="dot"></span>Admin</span>
+    <button class="btn" id="addMonthBtn" onclick="openAddMonth()">＋ Month</button>
+    <button class="btn primary" id="saveMastersBtn" onclick="saveAll()">⤓ Save masters</button>
+    <button class="btn" onclick="doLogout()" title="Sign out">⏻</button>
+  </div>
+  <div class="tabs masters-only" id="tabs">
+    <button class="tab active" data-v="access">🔑 Org &amp; Access</button>
+    <button class="tab" data-v="users">👥 Users &amp; Logins</button>
+    <button class="tab" data-v="bulk">📤 Bulk Update</button>
+    <button class="tab" data-v="employee">👤 Employees</button>
+    <button class="tab" data-v="franchise">🏪 Franchises</button>
+    <button class="tab" data-v="position">🎖 Positions</button>
+    <button class="tab" data-v="geography">🗺 Geography</button>
+    <button class="tab" data-v="expense">💰 Expense (monthly)</button>
+    <button class="tab" data-v="guarantee">🔒 Guarantee &amp; Fixed</button>
+    <button class="tab" data-v="routeoutlet">🛣 Routes &amp; Outlets</button>
+    <button class="tab" data-v="holidays">📅 Non-Working Days</button>
+    <button class="tab" data-v="datasync">📂 Data Sync</button>
+  </div>
+  <div class="filterbar masters-only" id="filterBar">
+    <span class="flabel">Filter</span>
+    <select class="fsel" id="fState" onchange="setFilter('state',this.value)"></select>
+    <select class="fsel" id="fPos" onchange="setFilter('pos',this.value)"></select>
+    <select class="fsel" id="fEmp" onchange="setFilter('emp',this.value)"></select>
+    <button class="btn sm" onclick="resetFilters()">Reset</button>
+  </div>
+  <div class="filterbar burn-only" id="burnFilterBar" style="display:none">
+    <span class="flabel">Filter</span>
+    <select class="fsel" id="bfState" onchange="setBurnFilter('state',this.value)"></select>
+    <select class="fsel" id="bfFr" onchange="setBurnFilter('fr',this.value)"></select>
+    <select class="fsel" id="bfPos" onchange="setBurnFilter('pos',this.value)"></select>
+    <select class="fsel" id="bfEmp" onchange="setBurnFilter('emp',this.value)"></select>
+    <select class="fsel" id="bfRoute" onchange="setBurnFilter('route',this.value)"></select>
+    <span style="width:1px;height:22px;background:var(--line2);margin:0 2px"></span>
+    <select class="fsel" id="bfMonth" onchange="setBurnFilter('month',this.value)"></select>
+    <span style="width:1px;height:22px;background:var(--line2);margin:0 2px"></span>
+    <span class="flabel" style="font-size:10px">Date range</span>
+    <input type="date" class="fsel" id="bfFrom" onchange="setBurnFilter('from',this.value)" style="color-scheme:dark;min-width:140px">
+    <span style="color:var(--txt-mute)">→</span>
+    <input type="date" class="fsel" id="bfTo" onchange="setBurnFilter('to',this.value)" style="color-scheme:dark;min-width:140px">
+    <button class="btn sm" onclick="resetBurnFilters()">Reset</button>
+  </div>
+  <div class="filterbar bottle-only" id="bottleFilterBar" style="display:none">
+    <span class="flabel">Filter</span>
+    <select class="fsel" id="cfState" onchange="setBottleFilter('state',this.value)"></select>
+    <select class="fsel" id="cfFr" onchange="setBottleFilter('fr',this.value)"></select>
+    <select class="fsel" id="cfPos" onchange="setBottleFilter('pos',this.value)"></select>
+    <select class="fsel" id="cfEmp" onchange="setBottleFilter('emp',this.value)"></select>
+    <select class="fsel" id="cfRoute" onchange="setBottleFilter('route',this.value)"></select>
+    <select class="fsel" id="cfMonth" onchange="setBottleFilter('month',this.value)"></select>
+    <button class="btn sm" onclick="resetBottleFilters()">Reset</button>
+  </div>
+
+  <div class="filterbar pjp-only" id="pjpFilterBar" style="display:none">
+    <span class="flabel">Filter</span>
+    <select class="fsel" id="pjpfState" onchange="setPjpFilter('state',this.value)"></select>
+    <select class="fsel" id="pjpfBdm"   onchange="setPjpFilter('bdm',this.value)"></select>
+    <select class="fsel" id="pjpfFr"    onchange="setPjpFilter('fr',this.value)"></select>
+    <select class="fsel" id="pjpfMonth" onchange="setPjpFilter('month',this.value)"></select>
+    <button class="btn sm" onclick="resetPjpFilters()">Reset</button>
+  </div>
+  <div class="filterbar p6-only" id="p6FilterBar" style="display:none">
+    <span class="flabel">Filter</span>
+    <select class="fsel" id="p6fState" onchange="setP6Filter('state',this.value)"></select>
+    <select class="fsel" id="p6fPos"   onchange="setP6Filter('pos',this.value)"></select>
+    <select class="fsel" id="p6fEmp"   onchange="setP6Filter('emp',this.value)"></select>
+    <select class="fsel" id="p6fFr"    onchange="setP6Filter('fr',this.value)"></select>
+    <span style="width:1px;height:22px;background:var(--line2);margin:0 2px"></span>
+    <input type="date" class="fsel" id="p6fFrom" onchange="setP6Filter('from',this.value)" style="color-scheme:dark;min-width:140px">
+    <span style="color:var(--txt-mute)">→</span>
+    <input type="date" class="fsel" id="p6fTo"   onchange="setP6Filter('to',this.value)"   style="color-scheme:dark;min-width:140px">
+    <button class="btn sm" onclick="resetP6Filters()">Reset</button>
+  </div>
+  <div class="filterbar pnl-only" id="pnlFilterBar" style="display:none">
+    <span class="flabel">P&amp;L</span>
+    <select class="fsel" id="pnlfState" onchange="setPnlF('state',this.value)"></select>
+    <select class="fsel" id="pnlfPos"   onchange="setPnlF('pos',this.value)"></select>
+    <select class="fsel" id="pnlfEmp"   onchange="setPnlF('emp',this.value)"></select>
+    <select class="fsel" id="pnlfFr"    onchange="setPnlF('fr',this.value)"></select>
+    <select class="fsel" id="pnlfMonth" onchange="setPnlF('month',this.value)"></select>
+  </div>
+</header>
+<div class="wrap">
+ <div class="module active" id="mod-masters">
+  <div class="view active" id="v-access"></div>
+  <div class="view" id="v-employee"></div>
+  <div class="view" id="v-franchise"></div>
+  <div class="view" id="v-position"></div>
+  <div class="view" id="v-geography"></div>
+  <div class="view" id="v-expense"></div>
+  <div class="view" id="v-guarantee"></div>
+  <div class="view" id="v-users"></div>
+  <div class="view" id="v-bulk"></div>
+  <div class="view" id="v-routeoutlet"></div>
+  <div class="view" id="v-holidays"></div>
+  <div class="view" id="v-datasync"></div>
+ </div>
+ <div class="module" id="mod-burn"></div>
+ <div class="module" id="mod-bottle"></div>
+ <div class="module" id="mod-route"></div>
+ <div class="module" id="mod-pjp"></div>
+ <div class="module" id="mod-p6"></div>
+ <div class="module" id="mod-pnl"></div>
+ <div class="module" id="mod-finance"></div>
+ <div class="module" id="mod-reports"></div>
+ <div class="module" id="mod-empreport"></div>
+  <div class="foot">MR.GOLISODA · Masters feed every process. BDE → 1 franchise · BDM → many BDEs · State Head → many BDMs · NSM → all. Launch Exec → multiple franchises (separate tree).</div>
+</div>
+<div class="toast" id="toast"></div>
+
+  <script src="/static/js/app.js"></script>
+</body>
+</html>
